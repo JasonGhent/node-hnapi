@@ -9,6 +9,8 @@ nconf.argv()
 		cache_exp: 60*10 // 10 mins
 	});
 
+var timeOut = 120000;
+
 if (nconf.get('NEW_RELIC_LICENSE_KEY')) require('newrelic');
 require('longjohn');
 var express = require('express');
@@ -141,7 +143,7 @@ app.use(function(req, res, next){
 	var timeout = setTimeout(function(){
 		winston.error('Server timeout: ' + req.url);
 		res.send(504);
-	}, 25000);
+	}, timeOut);
 	res.on('header', function(){
 		clearTimeout(timeout);
 	});
@@ -217,7 +219,7 @@ var requestWorker = function(path, data, fn, done){
 			headers: headers,
 			agent: false
 		});
-		req.setTimeout(10000, function(){
+		req.setTimeout(timeOut, function(){
 			req.abort();
 			delete REQUESTS[path];
 		});
